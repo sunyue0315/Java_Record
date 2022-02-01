@@ -1,0 +1,99 @@
+@startuml
+title 荷叶健康工作链路流程
+/'面向用户已群体'/
+actor 自然用户  as user #black
+actor 渠道用户  as channel #yellow
+
+hide footbox
+participant "用户(统称)" as userName
+participant "荷叶商城系统" as heyeShoppingSys
+participant "用户中心系统" as userSys
+participant "商品中心" as shopCenter
+participant "灵芝问诊" as lingZhiInquiry
+participant "开放平台 open-api" as openApi
+participant "订单中心" as orderCenter
+participant "OFC-履约系统(履约流程)" as OFC
+participant "支付中心" as payCenter
+participant "神农-erp" as erpCenter
+participant "运输管理系统-TMS" as TMS
+
+autonumber
+alt 1.用户登录
+    userName -> heyeShoppingSys : 用户登陆小程序下单
+    activate heyeShoppingSys #red
+        heyeShoppingSys -> heyeShoppingSys : 手机号授权登陆
+        heyeShoppingSys -> userSys : 手机号
+        activate userSys #yellow
+            userSys -> userSys : 生成用户信息
+            userSys -> heyeShoppingSys : success 鉴权登陆成功
+        deactivate userSys
+        heyeShoppingSys -> shopCenter : 获取商品信息
+        activate shopCenter #blue
+            shopCenter -> heyeShoppingSys : 药品列表
+        deactivate shopCenter
+end
+
+alt 2.用户购药
+    userName -> heyeShoppingSys : 选择商品->\n 1.两种方式: 用户可以直接选择商品购药 \n 2.通过问诊医生开方下单
+    note right of userName : 渠道用户可以直接跳转到相应的页面, \n 进行购药、问诊, 用户系统会自动为用户注册\n 而不需要注册用户(这块涉及到参数转换的流程)\n 详见参数转换的流程图(后面渠道对接新的接入方式)
+    alt 2.1 商城购药
+        userName -> heyeShoppingSys : 提交需要列表，如果有处方药，需要开具处方单
+    end
+
+    alt 2.2 通过问诊购药
+        userName -> lingZhiInquiry : 在线问诊
+        activate lingZhiInquiry #green
+            lingZhiInquiry -> lingZhiInquiry : 记录问诊信息
+            lingZhiInquiry -> lingZhiInquiry : 记录处方信息
+            lingZhiInquiry -> openApi : 调用开放平台同步问诊接口绑定流水号
+            lingZhiInquiry -> heyeShoppingSys : 返回处方等信息
+        deactivate lingZhiInquiry
+    end
+end
+
+alt 3. 下单
+    userName -> heyeShoppingSys : 需求列表页: 优惠计算：我司自己计算； 调用渠道方接口获取优惠金额
+    userName -> heyeShoppingSys : 提交订单
+    heyeShoppingSys -> orderCenter : 请求订单中心创建订单接口：包含药品信息、处方id等
+        activate orderCenter #LightBlue
+            orderCenter -> orderCenter : 生成订单
+            orderCenter -> heyeShoppingSys : 创建订单成功，订单未支付, 此时状态为 10
+            heyeShoppingSys -> heyeShoppingSys : 扣减库存
+            heyeShoppingSys -> orderCenter : sucess
+            orderCenter -> OFC : MQ发送订单状态通知 OFC 未支付 10
+        deactivate orderCenter
+        activate OFC #lightPink
+            OFC -> OFC : 保存订单号
+            OFC -> OFC : 记录在途库存
+        destroy OFC
+    heyeShoppingSys -> payCenter : 发起支付
+    activate payCenter #purple
+        payCenter -> payCenter : 调用三方支付平台
+        payCenter -> payCenter : 记录支付信息
+        payCenter -> orderCenter : 支付成功
+    deactivate payCenter
+        activate orderCenter #LightBlue
+            orderCenter -> orderCenter : 修改订单状态为待发货
+            orderCenter -> OFC : MQ发送订单状态通知 OFC 已支付待发货 30
+            orderCenter -> heyeShoppingSys : 订单支付成功
+        deactivate orderCenter
+    deactivate heyeShoppingSys
+end
+== 下单完成后履约 ==
+alt OFC 履约流程
+    OFC -> erpCenter : 可售库存数量小于等于 3, 触发预占库存机制
+    activate erpCenter #D35400
+        erpCenter -> erpCenter : 分配库存
+        erpCenter -> OFC : 返回分配结果， OFC根据结果修改可售库存
+    deactivate erpCenter
+    OFC -> TMS : 调用 TMS 接口推送订单, 预占面单号
+    activate TMS #B9770E
+        TMS -> TMS : 预占面单号
+    destroy TMS
+    TMS -> OFC : 回调OFC接口，回传面单号(运单号)
+    activate OFC #lightPink
+        OFC -> OFC : 保存面单信息
+        OFC -> TMS : 回传订单/配送信息
+
+end
+@enduml
