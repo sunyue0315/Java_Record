@@ -1,6 +1,6 @@
 @startuml
 title 荷叶健康工作链路流程
-/'面向用户已群体'/
+/'面向用户群体'/
 actor 自然用户  as user #black
 actor 渠道用户  as channel #yellow
 
@@ -16,6 +16,14 @@ participant "OFC-履约系统(履约流程)" as OFC
 participant "支付中心" as payCenter
 participant "神农-erp" as erpCenter
 participant "运输管理系统-TMS" as TMS
+participant "小药药物流开放平台" as LOP
+participant "神农商品中心" as ShenNongProductCenter
+participant "神农履约流程" as ShenNongLvYue
+participant "神农订单中心" as ShenNongOrderCenter
+participant "OMC" as OMC
+participant "神农任务中心" as ShenNongTaskCenter
+participant "神农采购" as ShenNongCaiGou
+participant "WMS" as WMS
 
 autonumber
 alt 1.用户登录
@@ -90,10 +98,67 @@ alt OFC 履约流程
     activate TMS #B9770E
         TMS -> TMS : 预占面单号
     destroy TMS
-    TMS -> OFC : 回调OFC接口，回传面单号(运单号)
+    TMS -> OFC : 回调OFC接口，回传面单号(运单号) callbackOrderWaybill
     activate OFC #lightPink
         OFC -> OFC : 保存面单信息
-        OFC -> TMS : 回传订单/配送信息
+        OFC -> LOP : 回传订单/配送信息
+end
+
+alt 神农履约流程
+    activate LOP #99FF99
+        LOP -> ShenNongProductCenter : 下传标准库id、渠道id(渠道id映射关系保存在 o2o_agg_channel_mapping 表中)
+        activate ShenNongProductCenter #4A235A
+            ShenNongProductCenter -> ShenNongProductCenter : 根据商品标准库id查询商品
+            ShenNongProductCenter -> LOP : 返回商品集合
+            deactivate ShenNongProductCenter
+        LOP -> LOP : 校验商品是否存在
+        LOP -> LOP : 生成 ToC 销售订单(物开平台订单开头 LOP, 商城订单 BC 开头)
+        LOP -> ShenNongLvYue : LOP 发送MQ通知神农履约系统
+            activate ShenNongLvYue #515A5A
+                ShenNongLvYue -> ShenNongLvYue : 组织机构信息
+                ShenNongLvYue -> ShenNongLvYue : 检测商品信息
+                ShenNongLvYue -> ShenNongLvYue : 检测商品价格
+                ShenNongLvYue -> ShenNongLvYue : 商费率检测
+                ShenNongLvYue -> ShenNongLvYue : 组织客户信息
+                ShenNongLvYue -> ShenNongLvYue : 组织订单金额
+                ShenNongLvYue -> ShenNongOrderCenter : 下传 ToB 销售单信息(XSD 开头)
+                deactivate ShenNongLvYue
+            activate ShenNongOrderCenter #D4AC0D
+                ShenNongOrderCenter -> ShenNongOrderCenter : 保存神农 ToB 销售单
+                ShenNongOrderCenter -> ShenNongOrderCenter : 发送审核 销售单 MQ
+                ShenNongOrderCenter -> ShenNongOrderCenter : 消费审单 MQ
+                ShenNongOrderCenter -> OMC : 下传 ToB 销售单
+            deactivate ShenNongOrderCenter
+            activate OMC #336600
+                OMC -> OMC : 保存 ToB 销售单(未下发/未下推)
+            destroy OMC
+        LOP -> OFC : 订单/配送信息推送成功
+    deactivate LOP
+        OFC -> OFC : 在途库存做减法(乐观锁抢锁)
+        OFC -> OFC : 更新作业状态(作业中)
+    destroy OFC
+    ShenNongTaskCenter -> OMC : 定时扫描 OMC 数据库
+    activate OMC #336600
+        OMC -> OMC : 扫描OMC数据库
+        OMC -> OMC : 查询未下发/未下推的 ToB 销售单
+        OMC -> OMC : 发送MQ消息
+        OMC -> OMC : 消费 MQ, 将ToB销售订单数据写入神农和WMS中间表
+        OMC -> LOP : 下传销售单(荷叶商城的销售单)给物流开放平台
+    deactivate OMC
+    activate LOP #99FF99
+        LOP -> ShenNongCaiGou : 给采购发送ToB采购单信息
+        activate ShenNongCaiGou #3300CC
+            ShenNongCaiGou -> ShenNongCaiGou : 消费 MQ 将 ToB 采购单写入神农和WMS中间表
+        destroy ShenNongCaiGou
+        LOP -> WMS : 下发 ToC 销售单信息
+    deactivate LOP
+    activate WMS #FFCC00
+        WMS -> WMS : 保存 ToC 销售单信息
+        WMS -> LOP : 发送 ToC 订单出库 MQ
+    destroy WMS
+    activate LOP #99FF99
+        LOP -> LOP : 更新本地订单状态
+
 
 end
 @enduml
