@@ -14,7 +14,7 @@ participant "开放平台 open-api" as openApi
 participant "订单中心" as orderCenter
 participant "OFC-履约系统(履约流程)" as OFC
 participant "支付中心" as payCenter
-participant "神农-erp" as erpCenter
+participant "神农-erp库存" as erpCenter
 participant "运输管理系统-TMS" as TMS
 participant "小药药物流开放平台" as LOP
 participant "神农商品中心" as ShenNongProductCenter
@@ -24,6 +24,9 @@ participant "OMC" as OMC
 participant "神农任务中心" as ShenNongTaskCenter
 participant "神农采购" as ShenNongCaiGou
 participant "WMS" as WMS
+participant "SAAS" as SAAS
+participant "EC" as EC
+participant "TMS" as TMS
 
 autonumber
 alt 1.用户登录
@@ -154,11 +157,41 @@ alt 神农履约流程
     deactivate LOP
     activate WMS #FFCC00
         WMS -> WMS : 保存 ToC 销售单信息
-        WMS -> LOP : 发送 ToC 订单出库 MQ
+end
+
+alt 出库流程
+    WMS -> LOP : 发送 ToC 订单出库 MQ
     destroy WMS
     activate LOP #99FF99
         LOP -> LOP : 更新本地订单状态
+        LOP -> erpCenter : 生成 ToC 库存记录、扣减 ToC 库存
+        LOP -> OFC : 物开发送 MQ 消息，通知 OMS 订单已出库
+        activate OFC #lightPink
+            OFC -> OFC : 更新作业状态
+            OFC -> orderCenter : 出库
+        deactivate OFC
+        activate orderCenter #LightBlue
+                orderCenter -> orderCenter : 更新订单状态
+        destroy orderCenter
+        LOP -> SAAS : ToC 出库消息
+    deactivate LOP
+    activate SAAS #212121
+        SAAS -> SAAS : 生成 ToC 出库记录
+    destroy SAAS
+    ShenNongTaskCenter -> orderCenter : 定时扫描中间表
+    activate orderCenter #LightBlue
+         orderCenter -> EC : 给 EC 发送 ToB 销售单
+    deactivate orderCenter
+    activate EC #546E7A
+        EC -> EC : 生成 ToB 销售单
+    destroy EC
+end
 
-
+alt 物流信息回传
+    TMS -> OFC : 物流信息回传
+    activate OFC #lightPink
+        OFC -> OFC : 存储物流信息
+        OFC -> orderCenter : 调用订单中心接口回传物流信息
+    deactivate OFC
 end
 @enduml
