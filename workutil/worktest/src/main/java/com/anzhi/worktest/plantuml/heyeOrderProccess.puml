@@ -71,7 +71,7 @@ alt 3. 下单
             orderCenter -> heyeShoppingSys : 创建订单成功，订单未支付, 此时状态为 10
             heyeShoppingSys -> heyeShoppingSys : 扣减库存
             heyeShoppingSys -> orderCenter : sucess
-            orderCenter -> OFC : MQ发送订单状态通知 OFC 未支付 10
+            orderCenter -> OFC : MQ发送订单状态通知 OFC 未支付 10 —— WaitPayOrderProcess
         deactivate orderCenter
         activate OFC #lightPink
             OFC -> OFC : 保存订单号
@@ -85,7 +85,7 @@ alt 3. 下单
     deactivate payCenter
         activate orderCenter #LightBlue
             orderCenter -> orderCenter : 修改订单状态为待发货
-            orderCenter -> OFC : MQ发送订单状态通知 OFC 已支付待发货 30
+            orderCenter -> OFC : MQ发送订单状态通知 OFC 已支付待发货 30 —— WaitOutOrderProcess
             orderCenter -> heyeShoppingSys : 订单支付成功
         deactivate orderCenter
     deactivate heyeShoppingSys
@@ -110,11 +110,12 @@ alt OFC 履约流程
     activate OFC #lightPink
         OFC -> OFC : 保存面单信息
         OFC -> LOP : 回传订单/配送信息
+        activate LOP #99FF99
 end
 
 alt 神农履约流程
-    activate LOP #99FF99
-        LOP -> ShenNongProductCenter : 下传标准库id、渠道id(渠道id映射关系保存在 o2o_agg_channel_mapping 表中)
+    LOP -> ShenNongProductCenter : 下传标准库id、渠道id(渠道id映射关系保存在 o2o_agg_channel_mapping 表中)
+
         activate ShenNongProductCenter #4A235A
             ShenNongProductCenter -> ShenNongProductCenter : 根据商品标准库id查询商品
             ShenNongProductCenter -> LOP : 返回商品集合
