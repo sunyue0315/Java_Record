@@ -92,12 +92,17 @@ alt 3. 下单
 end
 == 下单完成后履约 ==
 alt OFC 履约流程
-    OFC -> erpCenter : 可售库存数量小于等于 3, 触发预占库存机制
-    activate erpCenter #D35400
-        erpCenter -> erpCenter : 分配库存
-        erpCenter -> OFC : 返回分配结果， OFC根据结果修改可售库存
-    deactivate erpCenter
+    alt OFC分配库存
+        OFC -> erpCenter : 可售库存数量小于等于 3, 触发预占库存机制
+        activate OFC #lightPink
+            activate erpCenter #D35400
+                erpCenter -> erpCenter : 分配库存
+                erpCenter -> OFC : 返回分配结果， OFC根据结果修改可售库存
+            deactivate erpCenter
+    end
     OFC -> TMS : 调用 TMS 接口推送订单, 预占面单号
+    deactivate OFC
+
     activate TMS #B9770E
         TMS -> TMS : 预占面单号
     destroy TMS
