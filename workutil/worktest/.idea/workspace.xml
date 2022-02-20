@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b4dd41ec-c607-4b4c-833d-daf0de65aa42" name="Default Changelist" comment="1. xyy 订单流程" />
+    <list default="true" id="b4dd41ec-c607-4b4c-833d-daf0de65aa42" name="Default Changelist" comment="1. xyy 订单流程">
+      <change beforePath="$PROJECT_DIR$/../../README.en.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/4.SpringBoot实战-基础配置(二).md" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/4.SpringBoot实战-基础配置(二).md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/5.SpringBoot实战-基础配置(三).md" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/5.SpringBoot实战-基础配置(三).md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,6 +59,12 @@
       <workItem from="1643446528503" duration="8181000" />
       <workItem from="1643654150623" duration="1698000" />
       <workItem from="1643679902392" duration="1244000" />
+      <workItem from="1644893625273" duration="360000" />
+      <workItem from="1644915228784" duration="503000" />
+      <workItem from="1644975918565" duration="10000" />
+      <workItem from="1644975940849" duration="572000" />
+      <workItem from="1645333783685" duration="5000" />
+      <workItem from="1645334323733" duration="11000" />
     </task>
     <task id="LOCAL-00001" summary="1. xyy 订单流程">
       <created>1643654899877</created>
