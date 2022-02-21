@@ -100,9 +100,9 @@ end
 
 alt #Pink #LightGreen "订单状态通知"
 orderCenter -> openApi : MQ 发送订单状态
+deactivate orderCenter
 activate openApi
 openApi -> channel : 根据订单查询渠道入参，推送订单状态
 deactivate openApi
-deactivate orderCenter
 end
 @enduml
