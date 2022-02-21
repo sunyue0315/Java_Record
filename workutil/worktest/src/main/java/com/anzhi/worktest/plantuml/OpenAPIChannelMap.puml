@@ -13,9 +13,9 @@ H5->userServer: 下传渠道参数
 activate userServer #FFBBBB
 
 participant "开放平台" as openApi
-userServer->openApi: 将渠道参数下传到开放平台(数据是否要加密)
+userServer->openApi: 将渠道参数下传到开放平台 channelParamsConver()
 activate openApi
-openApi->openApi: 1.生成流水号\n2.根据渠道权益类型、channelcode获取配置信息\n3.使用productCode的值替换channelCode的值
+openApi->openApi: 1.生成流水号, 判断流水号是否重复\n2.根据渠道权益类型、channelcode获取配置信息\n3.使用productCode的值替换channelCode的值
 openApi->userServer: 将cahnnelCode，跳转地址、流水号等字段返给用户组
 deactivate openApi
 
@@ -30,9 +30,14 @@ H5->userServer : C端开始问诊, 下传流水号等信息
 activate userServer #FFBBBB
 userServer->inquiry: 参数继续下传给问诊
 activate inquiry #LightBlue
-inquiry-->userServer
+inquiry -> openApi : 调用开放平台接口inquiryPlatformCallback，流水号与问诊单id绑定
+activate openApi
+openApi -> openApi : 查询是否有相同的问诊id与流水号绑定
+openApi -> inquiry : 返回绑定结果
+deactivate openApi
+inquiry-->userServer : 问诊交互
 deactivate inquiry
-userServer-->H5
+userServer-->H5 : 前端交互展示
 deactivate H5
 deactivate userServer
 
@@ -47,44 +52,57 @@ activate inquiry #LightBlue
 inquiry->openApi:问诊发MQ通知开放平台,携带流水号, 问诊单id
 deactivate inquiry
 activate openApi
-openApi->channel: 1.根据流水号查询渠道参数信息\n2.拼接渠道参数，调用渠道接口，回传问诊id
+openApi->channel: 1.根据流水号查询渠道参数信息\n2.拼接渠道参数，调用渠道接口，回传问诊信息
 deactivate openApi
 end
 
 participant "订单中心" as orderCenter
-alt#Gold #LightBlue "下单"
-H5->userServer: 下单：(这里传参是否可以包含药品清单), 携带流水号
+alt#Gold #LightBlue "预下单操作"
+H5->userServer: 选购药品，点击提交需求预下单：包含处方id(CF开头，药品信息，(无库存的药品不传)), 携带流水号
 activate H5 #black
 activate userServer #FFBBBB
-userServer->orderCenter: 获取商品金额
-activate orderCenter #Red
-userServer->openApi: 调用查询抵扣金额,，携带流水号
+userServer->openApi: 根据流水哈查询渠道入参，调用查询抵扣金额,，携带流水号
 activate openApi
-orderCenter->userServer: 回传商品金额
+openApi->channel: 1.根据流水号号查询配置信息\n2.拼接渠道请求参数, 调用渠道接口回传处方id
+openApi -> userServer : 返回优惠信息
+deactivate openApi
+userServer->orderCenter: 用户组调用订单接口，获取计算后的金额信息
+activate orderCenter #Red
+activate openApi
+orderCenter->userServer: 回传商品总金额、运费等金额信息
 deactivate orderCenter
-openApi->channel: 1.根据订单号查询配置信息\n2.拼接渠道请求参数, 调用渠道接口回传处方id
-openApi->userServer: 回传抵扣金额
-userServer->H5
+userServer->H5 : 返回优惠信息，前端展示
 deactivate H5
 deactivate userServer
 deactivate openApi
 end
 
-alt#Pink #LightGreen "订单状态通知"
-H5->userServer: 支付完成, 流水号下传
-activate userServer #FFBBBB
-activate H5 #black
-userServer->orderCenter: 流水号下传
+participant "支付中台" as payCenter
+alt
+H5 -> orderCenter : 用户点击支付按钮，发起支付
 activate orderCenter #Red
-orderCenter->userServer
-orderCenter->openApi: MQ发送订单状态, 参数包括：流水号(外部订单号),订单号
-deactivate orderCenter
+activate H5 #black
+orderCenter -> payCenter : 调用支付中台接口
+activate payCenter 	#FFF68F
+payCenter -> payCenter : 调用三方支付平台
+payCenter -> payCenter : 记录支付信息
+payCenter -> orderCenter: 支付完成
+orderCenter -> openApi : 下传流水号与订单号，回调开放平台接口
 activate openApi
-openApi->channel: 1.根据订单号查询配置信息，调用渠道同步订单状态
-deactivate channel
+openApi -> orderCenter : 返回绑定结果
 deactivate openApi
-userServer->H5
-deactivate userServer
+deactivate payCenter
+orderCenter -> orderCenter : 修改订单状态
+orderCenter -> H5 : 支付成功
 deactivate H5
+
+end
+
+alt #Pink #LightGreen "订单状态通知"
+orderCenter -> openApi : MQ 发送订单状态
+activate openApi
+openApi -> channel : 根据订单查询渠道入参，推送订单状态
+deactivate openApi
+deactivate orderCenter
 end
 @enduml
