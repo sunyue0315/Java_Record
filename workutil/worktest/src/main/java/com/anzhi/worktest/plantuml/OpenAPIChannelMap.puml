@@ -1,4 +1,5 @@
 @startuml
+title 开放平台渠道对接流程-v1
 autonumber
 
 participant "渠道" as channel
