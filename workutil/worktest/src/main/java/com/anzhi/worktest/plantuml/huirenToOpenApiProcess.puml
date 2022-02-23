@@ -1,0 +1,53 @@
+@startuml
+
+title 汇仁医药渠道对接
+autonumber
+actor user #Yellow
+participant "汇仁医药" as  huiren
+participant "H5" as H5
+participant "开放平台" as openApi
+participant "订单中心" as orderCenter
+participant "用户组" as userCenter
+participant "医院问诊" as inquiry
+participant "商品中心" as productCent
+
+alt#Gold #LightBlue 医带患问诊
+user -> H5 : 医生通过医生端 app 生成二维码邀请用户进行 医患绑定
+activate H5 #red
+    alt  用户绑定: 如果用户已经存在
+        H5 -> H5 : 跳转到医生主页
+    else 用户绑定: 用户不存在创建用户
+        H5 -> userCenter : 调用用户组用户创建接口
+        activate userCenter #yellow
+            userCenter -> H5 : 创建用户成功
+        deactivate userCenter
+        H5 -> H5 : 跳转到医生主页, 点击咨询开始问诊，问诊结束医生开具处方单
+    destroy H5
+    end
+end
+
+alt#Gold #LightGreen 用户下单
+user -> H5 : 用户在 H5 页面点击下单
+activate H5 #red
+    H5 -> userCenter : 前端下传药品信息调用用户组
+    activate userCenter #yellow
+        userCenter -> orderCenter : 调用订单接口获取订单总价
+        activate orderCenter #9A7D0A
+            orderCenter -> userCenter : 返回金额信息
+        deactivate orderCenter
+        userCenter -> H5 : 返回金额信息
+    deactivate userCenter
+deactivate H5
+user -> H5 : 用户提交订单支付
+activate H5 #red
+    H5 -> userCenter : 调用用户的下单接口
+    activate userCenter #yellow
+        userCenter -> orderCenter : 用户调用订单的下单接口
+    deactivate userCenter
+    activate orderCenter #9A7D0A
+        orderCenter -> orderCenter : 创建订单号，修改订单状态
+        orderCenter -> openApi : MQ发送订单信息到开放平台
+deactivate H5
+end
+
+@enduml
