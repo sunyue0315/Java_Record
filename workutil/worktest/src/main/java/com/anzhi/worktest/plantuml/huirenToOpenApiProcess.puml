@@ -8,24 +8,9 @@ participant "H5" as H5
 participant "开放平台" as openApi
 participant "订单中心" as orderCenter
 participant "用户组" as userCenter
-participant "医院问诊" as inquiry
 participant "商品中心" as productCent
 
 alt#Gold #LightBlue 医带患问诊
-user -> H5 : 医生通过医生端 app 生成二维码邀请用户进行 医患绑定
-activate H5 #red
-    alt  用户绑定: 如果用户已经存在
-        H5 -> H5 : 跳转到医生主页
-    else 用户绑定: 用户不存在创建用户
-        H5 -> userCenter : 调用用户组用户创建接口
-        activate userCenter #yellow
-            userCenter -> H5 : 创建用户成功
-        deactivate userCenter
-        H5 -> H5 : 跳转到医生主页, 点击咨询开始问诊，问诊结束医生开具处方单
-    destroy H5
-    end
-end
-
 alt#Gold #LightGreen 用户下单
 user -> H5 : 用户在 H5 页面点击下单
 activate H5 #red
@@ -41,13 +26,33 @@ deactivate H5
 user -> H5 : 用户提交订单支付
 activate H5 #red
     H5 -> userCenter : 调用用户的下单接口
-    activate userCenter #yellow
-        userCenter -> orderCenter : 用户调用订单的下单接口
-    deactivate userCenter
-    activate orderCenter #9A7D0A
-        orderCenter -> orderCenter : 创建订单号，修改订单状态
-        orderCenter -> openApi : MQ发送订单信息到开放平台
 deactivate H5
+activate userCenter #yellow
+    userCenter -> orderCenter : 用户调用订单的下单接口
+deactivate userCenter
+activate orderCenter #9A7D0A
+    orderCenter -> orderCenter : 创建订单号，修改订单状态
+    orderCenter -> openApi : MQ发送订单信息到开放平台
+deactivate orderCenter
+activate openApi #B03A2E
+    openApi -> huiren : <color red> ToDo: 回传订单号、订单状态给汇仁医药, 新接口，需要开发
+    activate huiren #2874A6
+    huiren -> openApi : <color red> ToDo: 汇仁医药根据订单号查询订单详情, 已有接口
+    destroy huiren
+deactivate openApi
+end
+
+alt#Gold #lightBlue 发货: 成功发货
+huiren -> openApi : <color red> ToDo: 汇仁医药下传订单号、物流单号、 发货状态, 需要开发
+activate openApi #B03A2E
+    openApi -> openApi : 记录物流信息、订单号、发货状态、原因
+    openApi -> orderCenter : <color red> ToDo: 参考 OFC 调用订单中心接口回传物流信息, 需要开发
+destroy openApi
+activate orderCenter #9A7D0A
+    orderCenter -> orderCenter : 保存物流信息，修改订单状态
+destroy orderCenter
+else #lightGray 发货: 发货失败
+    huiren -> openApi : <color red> ToDo 发货失败，汇仁通知开放平台，下传订单号、失败原因，发货状态, 接口同 13
 end
 
 @enduml
