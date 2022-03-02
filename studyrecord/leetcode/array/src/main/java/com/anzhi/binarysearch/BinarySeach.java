@@ -1,10 +1,7 @@
 package com.anzhi.binarysearch;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * LeetCode: 704
+ * LeetCode: 704: https://leetcode-cn.com/problems/binary-search/
  * 给定一个 n 个元素有序(升序)整数组 nums 和一个目标值 target，实现函数搜索 nums 中的 target，如果目标值存在则返回下标，不存在返回 -1
  */
 public class BinarySeach {
