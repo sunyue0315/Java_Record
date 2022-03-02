@@ -7,4 +7,10 @@ package com.anzhi.removeelement;
  * 元素的顺序可以改变，你不需要考虑数组中超出新长度后面的元素
  */
 public class RemoveElement {
+    public static void main(String[] args) {
+        int[] nums = {3,2,2,3};
+        Solution solution = new Solution();
+        int size = solution.removeElement(nums, 3);
+        System.out.println(size);
+    }
 }
