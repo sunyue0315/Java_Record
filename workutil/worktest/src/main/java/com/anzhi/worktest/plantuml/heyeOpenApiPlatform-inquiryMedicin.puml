@@ -1,0 +1,62 @@
+@startuml
+title 对接模式一：问诊、购药在渠道方, 履约在荷叶健康平台
+autonumber
+participant "渠道方" as channel
+participant "开放平台" as openApi
+participant "荷叶健康" as heye
+
+
+channel -> openApi : 渠道方通过跳转链接进行联合登陆
+activate openApi #lightBlue
+    openApi -> openApi: 渠道校验
+    openApi -> heye: 校验通过跳转到荷叶问诊页
+deactivate openApi
+activate heye #red
+heye -> heye : 用户开始问诊
+heye -> heye : 医生开方
+heye -> heye : 用户选购药品提单
+heye -> openApi : 查询药品优惠、回传处方id、药品信息
+activate openApi #lightBlue
+    openApi -> channel : 查询药品优惠, (回传处方id、药品信息:渠道是否需要)
+    activate channel #lightGreen
+        channel -> openApi: 返回优惠金额
+    deactivate channel
+    openApi -> heye : 返回优惠金额
+deactivate openApi
+heye -> heye: 用户支付下单
+heye -> heye: 创建订单号
+heye -> openApi : 回传订单单号、订单状态
+deactivate heye
+activate openApi #lightBlue
+    openApi -> channel : 回传订单号、订单状态
+deactivate openApi
+====
+alt 渠道方主动查询问诊信息
+heye -> openApi : 问诊结束，回传问诊id
+activate openApi #lightBlue
+    openApi -> channel : 回传问诊id
+    activate channel #lightGreen
+        channel -> openApi: 根据问诊 id 查询问诊详情
+end
+====
+alt 渠道方主动查询运单信息
+channel -> openApi: 根据订单号查询运单信息
+openApi -> heye : 根据订单号查询运单信息
+activate heye #red
+    heye -> openApi: 返回运单信息
+deactivate heye
+openApi -> channel: 返回运单信息
+deactivate openApi
+deactivate channel
+end
+
+alt 荷叶健康推送运单信息
+heye -> openApi: 运单状态发生改变，回传物流信息
+activate heye #red
+activate openApi #lightBlue
+    openApi -> channel: 运单状态发生改变，回传物流信息
+deactivate openApi
+
+
+end
+@enduml
