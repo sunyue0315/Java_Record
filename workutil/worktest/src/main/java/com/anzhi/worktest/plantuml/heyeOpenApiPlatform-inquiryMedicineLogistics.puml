@@ -5,6 +5,7 @@ participant "渠道方" as channel
 participant "开放平台" as openApi
 participant "荷叶健康" as heye
 
+channel -> openApi :
 
 
 ====

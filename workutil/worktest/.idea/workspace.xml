@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4dd41ec-c607-4b4c-833d-daf0de65aa42" name="Default Changelist" comment="1. xyy 订单流程">
-      <change beforePath="$PROJECT_DIR$/../../README.en.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/application-dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/4.SpringBoot实战-基础配置(二).md" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/4.SpringBoot实战-基础配置(二).md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/5.SpringBoot实战-基础配置(三).md" beforeDir="false" afterPath="$PROJECT_DIR$/../../studyrecord/springboot/first_spring_boot_prj/src/main/resources/note/5.SpringBoot实战-基础配置(三).md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/anzhi/worktest/plantuml/heyeOpenApiPlatform-inquiryMedicineLogistics.puml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/anzhi/worktest/plantuml/heyeOpenApiPlatform-inquiryMedicineLogistics.puml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +43,19 @@
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -65,6 +74,7 @@
       <workItem from="1644975940849" duration="572000" />
       <workItem from="1645333783685" duration="5000" />
       <workItem from="1645334323733" duration="11000" />
+      <workItem from="1646233496375" duration="3211000" />
     </task>
     <task id="LOCAL-00001" summary="1. xyy 订单流程">
       <created>1643654899877</created>

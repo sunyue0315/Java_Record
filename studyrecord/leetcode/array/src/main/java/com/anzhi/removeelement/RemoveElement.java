@@ -8,9 +8,11 @@ package com.anzhi.removeelement;
  */
 public class RemoveElement {
     public static void main(String[] args) {
-        int[] nums = {3,2,2,3};
+        int[] nums = {5, 4, 6, 4, 4, 4};
         Solution solution = new Solution();
-        int size = solution.removeElement(nums, 3);
+        //int size = solution.removeElement(nums, 3);
+        int size = solution.removeElement2(nums, 4);
         System.out.println(size);
+
     }
 }

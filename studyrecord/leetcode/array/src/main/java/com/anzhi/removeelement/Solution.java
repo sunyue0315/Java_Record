@@ -19,4 +19,16 @@ public class Solution {
 
         return size;
     }
+
+    // 快慢指针
+    public int removeElement2(int[] nums, int val) {
+        //数组长度
+        int slowIndex = 0;
+        for(int fastIndex=0; fastIndex<nums.length; fastIndex++){
+            if(val != nums[fastIndex]){
+                nums[slowIndex++] = nums[fastIndex];
+            }
+        }
+        return slowIndex;
+    }
 }
