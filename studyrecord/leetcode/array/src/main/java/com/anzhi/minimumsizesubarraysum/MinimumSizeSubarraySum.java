@@ -10,7 +10,8 @@ public class MinimumSizeSubarraySum {
         int[] nums2 = {1,4,4};
         int[] nums3 = {1,1,1,1,1,1,1,1};
         Solution solution = new Solution();
-        int result = solution.minSubArrayLen(11, nums3);
+        //int result = solution.minSubArrayLen(11, nums3);
+        int result = solution.minSubArrayLen2(7, nums);
         System.out.println(result);
     }
 }
