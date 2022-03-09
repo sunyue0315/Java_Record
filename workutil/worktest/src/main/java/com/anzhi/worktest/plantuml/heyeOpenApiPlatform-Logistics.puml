@@ -4,10 +4,34 @@ autonumber
 participant "渠道方" as channel
 participant "开放平台" as openApi
 participant "荷叶健康" as heye
+participant "快递平台" as kuaiDi
 
-channel -> openApi :
+alt 门店添加
+activate  heye #red
+    heye -> heye : 添加门店
+    heye -> openApi : 定时任务定时同步门店列表
+activate openApi #lightBlue
+    openApi -> channel : 将新建的门店同步到渠道
+activate channel #lightGreen
+deactivate openApi
+    heye -> heye : 添加商品
+    heye -> openApi : 同步药品信息
+deactivate heye
+activate openApi #lightBlue
+    openApi -> channel : 将药品信息同步给渠道
+deactivate openApi
 
+end
 
+alt O2O 订单
+channel -> channel : 用户在渠道 O2O 门店选药下单
+channel -> openApi : 渠道回调开放平台接口，回传订单信息
+activate openApi #lightBlue
+    openApi -> openApi : 判断订单是否是处方单：\n处方单需要商家审核，审核通过接单，\n否则驳回，订单结束
+    openApi -> heye : 同步订单信息到荷叶健康
+    activate heye #red
+        heye -> openApi : 订单发货
+end
 ====
 alt 渠道方主动查询问诊信息
 heye -> openApi : 问诊结束，回传问诊id
