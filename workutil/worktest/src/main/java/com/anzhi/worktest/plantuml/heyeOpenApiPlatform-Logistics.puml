@@ -1,5 +1,5 @@
 @startuml
-title 对接模式一：问诊、购药、履约全部通过荷叶健康平台
+title 对接模式一：问诊、购药在渠道方，履约通过荷叶健康平台
 autonumber
 participant "渠道方" as channel
 participant "开放平台" as openApi
