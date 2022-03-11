@@ -1,5 +1,5 @@
 @startuml
-title 对接模式一：问诊、购药在渠道方，履约通过荷叶健康平台
+title 对接模式一O2O：问诊、购药在渠道方，履约通过荷叶健康平台
 autonumber
 participant "渠道方" as channel
 participant "开放平台" as openApi
@@ -8,57 +8,38 @@ participant "快递平台" as kuaiDi
 
 alt 门店添加
 activate  heye #red
-    heye -> heye : 添加门店
-    heye -> openApi : 定时任务定时同步门店列表
+heye -> heye : 添加门店
+heye -> openApi : 定时任务定时同步门店列表
 activate openApi #lightBlue
-    openApi -> channel : 将新建的门店同步到渠道
+openApi -> channel : 将新建的门店同步到渠道
+deactivate openApi
 activate channel #lightGreen
 deactivate openApi
-    heye -> heye : 添加商品
-    heye -> openApi : 同步药品信息
+heye -> heye : 添加商品
+heye -> openApi : 同步药品信息
 deactivate heye
 activate openApi #lightBlue
-    openApi -> channel : 将药品信息同步给渠道
+openApi -> channel : 将药品信息同步给渠道
 deactivate openApi
-
 end
 
 alt O2O 订单
 channel -> channel : 用户在渠道 O2O 门店选药下单
 channel -> openApi : 渠道回调开放平台接口，回传订单信息
-activate openApi #lightBlue
-    openApi -> openApi : 判断订单是否是处方单：\n处方单需要商家审核，审核通过接单，\n否则驳回，订单结束
-    openApi -> heye : 同步订单信息到荷叶健康
-    activate heye #red
-        heye -> openApi : 订单发货
-end
-====
-alt 渠道方主动查询问诊信息
-heye -> openApi : 问诊结束，回传问诊id
-activate openApi #lightBlue
-    openApi -> channel : 回传问诊id
-    activate channel #lightGreen
-        channel -> openApi: 根据问诊 id 查询问诊详情
-end
-====
-alt 渠道方主动查询运单信息
-channel -> openApi: 根据订单号查询运单信息
-openApi -> heye : 根据订单号查询运单信息
-activate heye #red
-    heye -> openApi: 返回运单信息
-deactivate heye
-openApi -> channel: 返回运单信息
-deactivate openApi
 deactivate channel
-end
-
-alt 荷叶健康推送运单信息
-heye -> openApi: 运单状态发生改变，回传物流信息
-activate heye #red
 activate openApi #lightBlue
-    openApi -> channel: 运单状态发生改变，回传物流信息
+openApi -> openApi : 判断订单是否是处方单：\n处方单需要商家审核，审核通过接单，\n否则驳回，订单结束
+openApi -> heye : 同步订单信息到荷叶健康
+activate heye #red
+heye -> kuaiDi : 通知蜂鸟接单
+activate kuaiDi #yellow
+kuaiDi -> kuaiDi : 蜂鸟骑手接单
+kuaiDi -> heye : 通知荷叶已经接单，同步骑手信息
+deactivate kuaiDi
+heye -> openApi : 通知开放平台订单已经被接单
+deactivate heye
+openApi -> channel : 通知渠道骑手已经接单，并推送骑手信息
+destroy channel
 deactivate openApi
-
-
 end
 @enduml
