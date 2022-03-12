@@ -1,6 +1,6 @@
 package com.anzhi.threadvariable;
 
-public class ThreadVariable implements Runnable{
+public class ThreadVariableNotShare implements Runnable{
 
     private int count;
 
