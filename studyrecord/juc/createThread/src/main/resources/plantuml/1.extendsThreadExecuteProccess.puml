@@ -1,6 +1,7 @@
 @startuml
 start
 :CreateThreadByRunnable runnable = new CreateThreadByRunnable() \n Thread t2 = new Thread(runnable);
+:执行 Thread 的无参构造函数 public Thread() ;
 :调用 Thread 类构造方法初始化线程: init(null, target, "Thread-" + nextThreadNum(), 0);
 if (if (threadStatus != 0) 线程是否已经启动) then (yes)
     : 抛出线程状态异常 throw new IllegalThreadStateException();
