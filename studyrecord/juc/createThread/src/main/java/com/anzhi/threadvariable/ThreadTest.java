@@ -33,13 +33,11 @@ public class ThreadTest {
         t4.start();
 
         ThreadVariableShare varT5 = new ThreadVariableShare();
-        varT5.setCount(10);
         Thread t5 = new Thread(varT2);
         t5.setName("varT5");
         t5.start();
 
         ThreadVariableShare varT6 = new ThreadVariableShare();
-        varT3.setCount(10);
         Thread t6 = new Thread(varT3);
         t6.setName("varT6");
         t6.start();
