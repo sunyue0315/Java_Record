@@ -19,6 +19,5 @@ public class ThreadTest {
         t3.setName("测试Thread可以传入Runnable接口");
         t3.start();
 
-
     }
 }
