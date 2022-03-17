@@ -1,4 +1,5 @@
 package com.anzhi.threadmethod;
 
-public class CurrentThreadMethod {
+public class CurrentThreadMethod extends Thread{
+
 }
