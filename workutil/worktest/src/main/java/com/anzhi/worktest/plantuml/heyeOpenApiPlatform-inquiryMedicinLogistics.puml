@@ -1,5 +1,5 @@
 @startuml
-title 对接模式一：问诊、购药在渠道方, 履约在荷叶健康平台
+title 对接模式一：问诊、购药, 履约在荷叶健康平台
 autonumber
 participant "渠道方" as channel
 participant "开放平台" as openApi
@@ -9,12 +9,13 @@ participant "荷叶健康" as heye
 channel -> openApi : 渠道方通过跳转链接进行联合登陆
 activate openApi #lightBlue
     openApi -> openApi: 渠道校验
-    openApi -> heye: 校验通过跳转到荷叶问诊页
+    openApi -> heye: 校验通过, 跳转到荷叶问诊页
 deactivate openApi
 activate heye #red
 heye -> heye : 用户开始问诊
 heye -> heye : 医生开方
 heye -> heye : 用户选购药品提单
+alt 渠道方有药品优惠业务，才有该业务流程
 heye -> openApi : 查询药品优惠、回传处方id、药品信息
 activate openApi #lightBlue
     openApi -> channel : 查询药品优惠, (回传处方id、药品信息:渠道是否需要)
@@ -23,9 +24,10 @@ activate openApi #lightBlue
     deactivate channel
     openApi -> heye : 返回优惠金额
 deactivate openApi
+end
 heye -> heye: 用户支付下单
 heye -> heye: 创建订单号
-heye -> openApi : 回传订单单号、订单状态
+heye -> openApi : 荷叶健康回传订单单号、订单状态
 deactivate heye
 activate openApi #lightBlue
     openApi -> channel : 回传订单号、订单状态
