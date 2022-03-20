@@ -1,8 +1,8 @@
-package com.anzhi.threadmethod;
+package com.anzhi.threadmethod.isalivethread;
 
-public class ThreadisAliveMethod extends Thread{
+public class IsAliveThreadMethod extends Thread{
 
-    public ThreadisAliveMethod() {
+    public IsAliveThreadMethod() {
         System.out.println("ThreadisAliveMethod-------------begin");
         System.out.println("Thread.currentThread.getName=" + Thread.currentThread().getName());
         System.out.println("currentThread.isAlive=" + Thread.currentThread().isAlive());
