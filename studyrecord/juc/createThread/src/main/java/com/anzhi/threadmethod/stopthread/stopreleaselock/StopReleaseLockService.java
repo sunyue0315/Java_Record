@@ -15,7 +15,7 @@ public class StopReleaseLockService {
     synchronized public void printString(String username, String password){
         try{
             this.username = username;
-            Thread.sleep(1000);
+            Thread.sleep(100000000);
             this.password = password;
         }catch (InterruptedException e){
 
