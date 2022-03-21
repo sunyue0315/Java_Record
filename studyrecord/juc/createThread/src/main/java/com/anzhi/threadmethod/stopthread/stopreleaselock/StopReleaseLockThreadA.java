@@ -2,14 +2,14 @@ package com.anzhi.threadmethod.stopthread.stopreleaselock;
 
 public class StopReleaseLockThreadA extends Thread{
 
-    private StopReleaseLockService service;
+    private StopReleaseLockService serviceThread;
 
-    public StopReleaseLockThreadA(StopReleaseLockService service) {
-
+    public StopReleaseLockThreadA(StopReleaseLockService serviceThread) {
+        this.serviceThread = serviceThread;
     }
 
     @Override
     public void run() {
-
+        serviceThread.printString("b", "bb");
     }
 }
