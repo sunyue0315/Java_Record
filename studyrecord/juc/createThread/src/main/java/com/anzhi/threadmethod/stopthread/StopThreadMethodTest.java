@@ -7,6 +7,9 @@ public class StopThreadMethodTest {
             stopThread.start();
             Thread.sleep(800);
             stopThread.stop();
+
+            StopThreadMethod2 stopThreadMethod2 = new StopThreadMethod2();
+            stopThreadMethod2.start();
         }catch (InterruptedException e){
 
         }
