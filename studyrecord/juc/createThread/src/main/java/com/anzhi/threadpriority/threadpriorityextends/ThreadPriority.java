@@ -1,4 +1,4 @@
-package com.anzhi.threadpriority;
+package com.anzhi.threadpriority.threadpriorityextends;
 
 public class ThreadPriority extends Thread{
     @Override
