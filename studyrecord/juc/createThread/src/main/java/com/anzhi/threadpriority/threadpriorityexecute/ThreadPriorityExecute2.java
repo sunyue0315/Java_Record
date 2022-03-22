@@ -14,6 +14,6 @@ public class ThreadPriorityExecute2 extends Thread{
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("☆☆☆ThreadPriorityExecute use time= " + (endTime - beginTime));
+        System.out.println("☆☆☆ThreadPriorityExecute2 use time= " + (endTime - beginTime));
     }
 }
