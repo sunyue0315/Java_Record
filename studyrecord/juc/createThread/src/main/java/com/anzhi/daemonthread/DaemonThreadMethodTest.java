@@ -3,6 +3,8 @@ package com.anzhi.daemonthread;
 public class DaemonThreadMethodTest extends Thread{
     public static void main(String[] args) {
         try{
+            // 设置一个钩子线程， 在 JVM 退出时输出日志
+            Runtime.getRuntime().addShutdownHook(new Thread(()-> System.out.println("The JVM exit success !!!")));
             DaemonThreadMethod threadMethod = new DaemonThreadMethod();
             threadMethod.setDaemon(true);
             threadMethod.start();
